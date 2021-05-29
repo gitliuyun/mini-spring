@@ -45,7 +45,9 @@ public class SimpleBeanContainerTest {
 主要增加如下类：
 - BeanDefinition，顾名思义，用于定义bean信息的类，包含bean的class类型、构造参数、属性值等信息，每个bean对应一个BeanDefinition的实例。简化BeanDefinition仅包含bean的class类型。
 - BeanDefinitionRegistry，BeanDefinition注册表接口，定义注册BeanDefinition的方法。
+  #registry实际为map结构，key为类名，value为类的class对象
 - SingletonBeanRegistry及其实现类DefaultSingletonBeanRegistry，定义添加和获取单例bean的方法。
+#实际为map，存储创建好之后的bean实例
 
 bean容器作为BeanDefinitionRegistry和SingletonBeanRegistry的实现类，具备两者的能力。向bean容器中注册BeanDefinition后，使用bean时才会实例化。
 
@@ -81,7 +83,8 @@ class HelloService {
 
 ![](./assets/instantiation-strategy.png)
 
-针对bean的实例化，抽象出一个实例化策略的接口InstantiationStrategy，有两个实现类：
+针对bean的实例化，
+#抽象出一个实例化策略的接口InstantiationStrategy，有两个实现类：
 - SimpleInstantiationStrategy，使用bean的构造函数来实例化
 - CglibSubclassingInstantiationStrategy，使用CGLIB动态生成子类
 
@@ -89,7 +92,7 @@ class HelloService {
 > 分支：populate-bean-with-property-values
 
 在BeanDefinition中增加和bean属性对应的PropertyValues，实例化bean之后，为bean填充属性(AbstractAutowireCapableBeanFactory#applyPropertyValues)。
-
+#PropertyValues实际是list数组引用，通过反射为bean填充属性
 测试：
 ```
 public class PopulateBeanWithPropertyValuesTest {
@@ -116,6 +119,7 @@ public class PopulateBeanWithPropertyValuesTest {
 
 增加BeanReference类，包装一个bean对另一个bean的引用。实例化beanA后填充属性时，若PropertyValue#value为BeanReference，引用beanB，则先去实例化beanB。
 由于不想增加代码的复杂度提高理解难度，暂时不支持循环依赖，后面会在高级篇中解决该问题。
+#核心逻辑为getBean方法中递归调用
 ```
 protected void applyPropertyValues(String beanName, Object bean, BeanDefinition beanDefinition) {
     try {
