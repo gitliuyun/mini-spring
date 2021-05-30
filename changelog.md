@@ -45,9 +45,12 @@ public class SimpleBeanContainerTest {
 主要增加如下类：
 - BeanDefinition，顾名思义，用于定义bean信息的类，包含bean的class类型、构造参数、属性值等信息，每个bean对应一个BeanDefinition的实例。简化BeanDefinition仅包含bean的class类型。
 - BeanDefinitionRegistry，BeanDefinition注册表接口，定义注册BeanDefinition的方法。
-  #registry实际为map结构，key为类名，value为类的class对象
+#<font color=red>笔记
+BeanDefinition实际为map结构，key为类名，value为类的class对象</font>
+
 - SingletonBeanRegistry及其实现类DefaultSingletonBeanRegistry，定义添加和获取单例bean的方法。
-#实际为map，存储创建好之后的bean实例
+#<font color=red>笔记
+SingletonBeanRegistry实际为map，存储创建好之后的bean实例</font>
 
 bean容器作为BeanDefinitionRegistry和SingletonBeanRegistry的实现类，具备两者的能力。向bean容器中注册BeanDefinition后，使用bean时才会实例化。
 
@@ -92,7 +95,8 @@ class HelloService {
 > 分支：populate-bean-with-property-values
 
 在BeanDefinition中增加和bean属性对应的PropertyValues，实例化bean之后，为bean填充属性(AbstractAutowireCapableBeanFactory#applyPropertyValues)。
-#PropertyValues实际是list数组引用，通过反射为bean填充属性
+#<font color=red>笔记
+PropertyValues实际是list数组引用，通过反射为bean填充属性</font>
 测试：
 ```
 public class PopulateBeanWithPropertyValuesTest {
@@ -119,7 +123,8 @@ public class PopulateBeanWithPropertyValuesTest {
 
 增加BeanReference类，包装一个bean对另一个bean的引用。实例化beanA后填充属性时，若PropertyValue#value为BeanReference，引用beanB，则先去实例化beanB。
 由于不想增加代码的复杂度提高理解难度，暂时不支持循环依赖，后面会在高级篇中解决该问题。
-#核心逻辑为getBean方法中递归调用
+#<font color=red>笔记
+核心逻辑为getBean方法中递归调用</font>
 ```
 protected void applyPropertyValues(String beanName, Object bean, BeanDefinition beanDefinition) {
     try {
@@ -236,10 +241,12 @@ BeanDefinitionReader是读取bean定义信息的抽象接口，XmlBeanDefinition
 由于从xml文件中读取的内容是String类型，所以属性仅支持String类型和引用其他Bean。后面会讲到属性编辑器PropertyEditor，实现类型转换。
 
 为了方便后面的讲解和功能实现，并且尽量保持和spring中BeanFactory的继承层次一致，对BeanFactory的继承层次稍微做了调整。
-#流程梳理
+#<font color=red>笔记：
+流程梳理
 1. 读取所有bean定义的类名和属性放入beandefination
-2. 创建bean过程中首先实例化所有的bean，之后再统一注入属性值
-3. 涉及bean引用时依靠递归 getBean 实现依赖bean的创建
+2. 业务代码中获取bean的调用是spring创建bean的入口
+3. 创建bean过程中首先实例化所有的bean，之后再统一注入属性值
+4. 涉及bean引用时依靠递归 getBean 实现依赖bean的创建</font>
 
 ![](./assets/xml-file-define-bean.png)
 
