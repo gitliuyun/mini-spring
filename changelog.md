@@ -306,6 +306,11 @@ BeanPostProcessor也是spring提供的容器扩展机制，不同于BeanFactoryP
 
 BeanPostProcessor的两个方法分别在bean执行初始化方法（后面实现）之前和之后执行，理解其实现重点看单元测试BeanFactoryPostProcessorAndBeanPostProcessorTest#testBeanPostProcessor和AbstractAutowireCapableBeanFactory#initializeBean方法，有些地方做了微调，可不必关注。
 
+#<font color=red>笔记
+BeanFactoryPostProcessor 是为了在实例化bean之前修改beanDefination，在refresh()方法中调用
+BeanPostProcessor 是为了为在bean实例化并且设置属性值之后，执行初始化方法的前后执行特定的方法</font>
+
+
 ```
 public interface BeanPostProcessor {
 	/**
@@ -368,6 +373,23 @@ public class BeanFactoryProcessorAndBeanPostProcessorTest {
 BeanFactory是spring的基础设施，面向spring本身；而ApplicationContext面向spring的使用者，应用场合使用ApplicationContext。
 
 具体实现查看AbstractApplicationContext#refresh方法即可。注意BeanFactoryPostProcessor和BeanPostProcessor的自定识别，这样就可以在xml文件中配置二者而不需要像上一节一样手动添加到容器中了。
+
+#<font color=red>笔记
+1. 所有bean的生成过程都是getBean方法产生，包括BeanFactoryPostProcessor和BeanPostProcessor。createBean的流程
+    - 获取BeanDefinition
+    - 实例化bean
+    - 设置属性值
+    - 初始化bean
+      - 执行BeanPostProcessor的before
+      - 执行初始化方法
+      - 执行BeanPostProcessor的after
+    - 将bean放到beanFactory
+2. refresh 流程
+    - 创建beanFactory，加载bean定义
+    - 调用beanFactoryPostProcessor，改变beanDefinition
+    - 注册beanPostProcessor
+    - 实例化单例bean
+</font>
 
 从bean的角度看，目前生命周期如下：
 
