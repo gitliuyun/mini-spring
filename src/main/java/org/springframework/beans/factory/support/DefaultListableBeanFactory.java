@@ -1,5 +1,6 @@
 package org.springframework.beans.factory.support;
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.ConfigurableListableBeanFactory;
 import org.springframework.beans.factory.config.BeanDefinition;
@@ -10,6 +11,7 @@ import java.util.*;
  * @author derekyi
  * @date 2020/11/22
  */
+@Slf4j
 public class DefaultListableBeanFactory extends AbstractAutowireCapableBeanFactory
 		implements ConfigurableListableBeanFactory, BeanDefinitionRegistry {
 
@@ -41,6 +43,7 @@ public class DefaultListableBeanFactory extends AbstractAutowireCapableBeanFacto
 		beanDefinitionMap.forEach((beanName, beanDefinition) -> {
 			Class beanClass = beanDefinition.getBeanClass();
 			if (type.isAssignableFrom(beanClass)) {
+				log.info("根据bean类型获取bean==={}", beanName);
 				T bean = (T) getBean(beanName);
 				result.put(beanName, bean);
 			}
@@ -72,6 +75,7 @@ public class DefaultListableBeanFactory extends AbstractAutowireCapableBeanFacto
 
 	@Override
 	public void preInstantiateSingletons() throws BeansException {
+		log.info("遍历beanDefinitionMap实例化单例bean");
 		beanDefinitionMap.forEach((beanName, beanDefinition) -> {
 			if(beanDefinition.isSingleton()){
 				getBean(beanName);

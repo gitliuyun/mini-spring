@@ -1,5 +1,6 @@
 package org.springframework.context.support;
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.ConfigurableListableBeanFactory;
 import org.springframework.beans.factory.config.BeanFactoryPostProcessor;
@@ -23,6 +24,7 @@ import java.util.Map;
  * @author derekyi
  * @date 2020/11/28
  */
+@Slf4j
 public abstract class AbstractApplicationContext extends DefaultResourceLoader implements ConfigurableApplicationContext {
 
 	public static final String APPLICATION_EVENT_MULTICASTER_BEAN_NAME = "applicationEventMulticaster";
@@ -33,28 +35,36 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader i
 
 	@Override
 	public void refresh() throws BeansException {
+		log.info("开始刷新容器========");
 		//创建BeanFactory，并加载BeanDefinition
 		refreshBeanFactory();
 		ConfigurableListableBeanFactory beanFactory = getBeanFactory();
 
 		//添加ApplicationContextAwareProcessor，让继承自ApplicationContextAware的bean能感知bean
+		log.info("注册ApplicationContextAwareProcessor====");
 		beanFactory.addBeanPostProcessor(new ApplicationContextAwareProcessor(this));
 
 		//在bean实例化之前，执行BeanFactoryPostProcessor
+		log.info("执行BeanFactoryPostProcessor");
 		invokeBeanFactoryPostProcessors(beanFactory);
 
 		//BeanPostProcessor需要提前与其他bean实例化之前注册
+		log.info("开始注册BeanPostProcessors");
 		registerBeanPostProcessors(beanFactory);
 
 		//初始化事件发布者
+		log.info("初始化事件发布者");
 		initApplicationEventMulticaster();
 
 		//注册事件监听器
+		log.info("注册事件监听器");
 		registerListeners();
 
 		//注册类型转换器和提前实例化单例bean
+		log.info("注册类型转换器和实例化单例bean");
 		finishBeanFactoryInitialization(beanFactory);
 
+		log.info("容器刷新完成");
 		//发布容器刷新完成事件
 		finishRefresh();
 	}
@@ -62,6 +72,7 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader i
 	protected void finishBeanFactoryInitialization(ConfigurableListableBeanFactory beanFactory) {
 		//设置类型转换器
 		if (beanFactory.containsBean(CONVERSION_SERVICE_BEAN_NAME)) {
+			log.info("获取类型转换器{}", CONVERSION_SERVICE_BEAN_NAME);
 			Object conversionService = beanFactory.getBean(CONVERSION_SERVICE_BEAN_NAME);
 			if (conversionService instanceof ConversionService) {
 				beanFactory.setConversionService((ConversionService) conversionService);
@@ -85,8 +96,10 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader i
 	 * @param beanFactory
 	 */
 	protected void invokeBeanFactoryPostProcessors(ConfigurableListableBeanFactory beanFactory) {
+		log.info("调用BeanFactoryPostProcessors");
 		Map<String, BeanFactoryPostProcessor> beanFactoryPostProcessorMap = beanFactory.getBeansOfType(BeanFactoryPostProcessor.class);
 		for (BeanFactoryPostProcessor beanFactoryPostProcessor : beanFactoryPostProcessorMap.values()) {
+			log.info("调用BeanFactoryPostProcessors的postProcessBeanFactory方法");
 			beanFactoryPostProcessor.postProcessBeanFactory(beanFactory);
 		}
 	}
@@ -97,6 +110,7 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader i
 	 * @param beanFactory
 	 */
 	protected void registerBeanPostProcessors(ConfigurableListableBeanFactory beanFactory) {
+		log.info("注册BeanPostProcessors");
 		Map<String, BeanPostProcessor> beanPostProcessorMap = beanFactory.getBeansOfType(BeanPostProcessor.class);
 		for (BeanPostProcessor beanPostProcessor : beanPostProcessorMap.values()) {
 			beanFactory.addBeanPostProcessor(beanPostProcessor);

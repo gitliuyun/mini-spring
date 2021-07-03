@@ -4,6 +4,7 @@ import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.util.ClassUtil;
 import cn.hutool.core.util.StrUtil;
 import cn.hutool.core.util.TypeUtil;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.PropertyValue;
 import org.springframework.beans.PropertyValues;
@@ -20,6 +21,7 @@ import java.lang.reflect.Method;
  * @author derekyi
  * @date 2020/11/22
  */
+@Slf4j
 public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFactory
 		implements AutowireCapableBeanFactory {
 
@@ -67,8 +69,9 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
 	protected Object doCreateBean(String beanName, BeanDefinition beanDefinition) {
 		Object bean;
 		try {
+			log.info("开始创建bean： {}", beanName);
 			bean = createBeanInstance(beanDefinition);
-
+			log.info("bean=== {} 实例化完成", beanName);
 			//为解决循环依赖问题，将实例化后的bean放进缓存中提前暴露
 			if (beanDefinition.isSingleton()) {
 				Object finalBean = bean;

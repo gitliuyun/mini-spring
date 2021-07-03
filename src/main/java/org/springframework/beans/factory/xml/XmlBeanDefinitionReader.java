@@ -2,6 +2,7 @@ package org.springframework.beans.factory.xml;
 
 
 import cn.hutool.core.util.StrUtil;
+import lombok.extern.slf4j.Slf4j;
 import org.dom4j.Document;
 import org.dom4j.DocumentException;
 import org.dom4j.Element;
@@ -26,6 +27,7 @@ import java.util.List;
  * @author derekyi
  * @date 2020/11/26
  */
+@Slf4j
 public class XmlBeanDefinitionReader extends AbstractBeanDefinitionReader {
 
 	public static final String BEAN_ELEMENT = "bean";
@@ -71,6 +73,7 @@ public class XmlBeanDefinitionReader extends AbstractBeanDefinitionReader {
 	}
 
 	protected void doLoadBeanDefinitions(InputStream inputStream) throws DocumentException {
+		log.info("开始解析xml文件");
 		SAXReader reader = new SAXReader();
 		Document document = reader.read(inputStream);
 
@@ -80,6 +83,7 @@ public class XmlBeanDefinitionReader extends AbstractBeanDefinitionReader {
 		Element componentScan = root.element(COMPONENT_SCAN_ELEMENT);
 		if (componentScan != null) {
 			String scanPath = componentScan.attributeValue(BASE_PACKAGE_ATTRIBUTE);
+			log.info("需要扫描包目录==== {}", scanPath);
 			if (StrUtil.isEmpty(scanPath)) {
 				throw new BeansException("The value of base-package attribute can not be empty or null");
 			}
@@ -138,6 +142,7 @@ public class XmlBeanDefinitionReader extends AbstractBeanDefinitionReader {
 			}
 			//注册BeanDefinition
 			getRegistry().registerBeanDefinition(beanName, beanDefinition);
+			log.info("注册bean==={}的定义", beanName);
 		}
 	}
 

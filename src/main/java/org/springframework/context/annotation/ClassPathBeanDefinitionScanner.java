@@ -1,6 +1,7 @@
 package org.springframework.context.annotation;
 
 import cn.hutool.core.util.StrUtil;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.AutowiredAnnotationBeanPostProcessor;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.support.BeanDefinitionRegistry;
@@ -12,6 +13,7 @@ import java.util.Set;
  * @author derekyi
  * @date 2020/12/26
  */
+@Slf4j
 public class ClassPathBeanDefinitionScanner extends ClassPathScanningCandidateComponentProvider {
 
 	public static final String AUTOWIRED_ANNOTATION_PROCESSOR_BEAN_NAME = "org.springframework.context.annotation.internalAutowiredAnnotationProcessor";
@@ -27,12 +29,14 @@ public class ClassPathBeanDefinitionScanner extends ClassPathScanningCandidateCo
 			Set<BeanDefinition> candidates = findCandidateComponents(basePackage);
 			for (BeanDefinition candidate : candidates) {
 				// 解析bean的作用域
+				log.info("扫描bean的scope");
 				String beanScope = resolveBeanScope(candidate);
 				if (StrUtil.isNotEmpty(beanScope)) {
 					candidate.setScope(beanScope);
 				}
 				//生成bean的名称
 				String beanName = determineBeanName(candidate);
+				log.info("生成bean==={}的名称", beanName);
 				//注册BeanDefinition
 				registry.registerBeanDefinition(beanName, candidate);
 			}
@@ -40,6 +44,7 @@ public class ClassPathBeanDefinitionScanner extends ClassPathScanningCandidateCo
 
 		//注册处理@Autowired和@Value注解的BeanPostProcessor
 		registry.registerBeanDefinition(AUTOWIRED_ANNOTATION_PROCESSOR_BEAN_NAME, new BeanDefinition(AutowiredAnnotationBeanPostProcessor.class));
+		log.info("注册internalAutowiredAnnotationProcessor BeanPostProcessor");
 	}
 
 	/**

@@ -1,5 +1,6 @@
 package org.springframework.aop.framework.autoproxy;
 
+import lombok.extern.slf4j.Slf4j;
 import org.aopalliance.aop.Advice;
 import org.aopalliance.intercept.MethodInterceptor;
 import org.springframework.aop.*;
@@ -20,6 +21,7 @@ import java.util.Set;
  * @author derekyi
  * @date 2020/12/6
  */
+@Slf4j
 public class DefaultAdvisorAutoProxyCreator implements InstantiationAwareBeanPostProcessor, BeanFactoryAware {
 
 	private DefaultListableBeanFactory beanFactory;
@@ -44,6 +46,7 @@ public class DefaultAdvisorAutoProxyCreator implements InstantiationAwareBeanPos
 	protected Object wrapIfNecessary(Object bean, String beanName) {
 		//避免死循环
 		if (isInfrastructureClass(bean.getClass())) {
+			log.info("beanName 为基础设施 advise pointcut advisor");
 			return bean;
 		}
 
@@ -58,7 +61,7 @@ public class DefaultAdvisorAutoProxyCreator implements InstantiationAwareBeanPos
 					advisedSupport.setTargetSource(targetSource);
 					advisedSupport.setMethodInterceptor((MethodInterceptor) advisor.getAdvice());
 					advisedSupport.setMethodMatcher(advisor.getPointcut().getMethodMatcher());
-
+					log.info("创建代理类：{}", beanName);
 					//返回代理对象
 					return new ProxyFactory(advisedSupport).getProxy();
 				}

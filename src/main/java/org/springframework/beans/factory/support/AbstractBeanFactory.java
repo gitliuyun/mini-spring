@@ -1,5 +1,6 @@
 package org.springframework.beans.factory.support;
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.FactoryBean;
 import org.springframework.beans.factory.config.BeanDefinition;
@@ -17,6 +18,7 @@ import java.util.Map;
  * @author derekyi
  * @date 2020/11/22
  */
+@Slf4j
 public abstract class AbstractBeanFactory extends DefaultSingletonBeanRegistry implements ConfigurableBeanFactory {
 
 	private final List<BeanPostProcessor> beanPostProcessors = new ArrayList<>();
@@ -30,6 +32,7 @@ public abstract class AbstractBeanFactory extends DefaultSingletonBeanRegistry i
 
 	@Override
 	public Object getBean(String name) throws BeansException {
+		log.info("开始获取bean===={}", name);
 		Object sharedInstance = getSingleton(name);
 		if (sharedInstance != null) {
 			//如果是FactoryBean，从FactoryBean#getObject中创建bean
@@ -51,6 +54,7 @@ public abstract class AbstractBeanFactory extends DefaultSingletonBeanRegistry i
 	protected Object getObjectForBeanInstance(Object beanInstance, String beanName) {
 		Object object = beanInstance;
 		if (beanInstance instanceof FactoryBean) {
+			log.info("bean===={}是FactoryBean", beanName);
 			FactoryBean factoryBean = (FactoryBean) beanInstance;
 			try {
 				if (factoryBean.isSingleton()) {
@@ -90,6 +94,7 @@ public abstract class AbstractBeanFactory extends DefaultSingletonBeanRegistry i
 
 	@Override
 	public void addBeanPostProcessor(BeanPostProcessor beanPostProcessor) {
+		log.info("添加BeanPostProcessor");
 		//有则覆盖
 		this.beanPostProcessors.remove(beanPostProcessor);
 		this.beanPostProcessors.add(beanPostProcessor);

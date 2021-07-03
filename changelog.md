@@ -1440,6 +1440,10 @@ public class TypeConversionSecondPartTest {
 ## [解决循环依赖问题（一）：没有代理对象](#解决循环依赖问题一没有代理对象)
 > 分支：circular-reference-without-proxy-bean
 
+<font color=red>
+#笔记 wrapIfNecessary 的含义是判断是否需要代理
+</font>
+
 虽然放在高级篇，其实解决循环依赖问题的方法非常简单。
 
 先理解spring中为什么会有循环依赖的问题。比如如下的代码
