@@ -1062,6 +1062,14 @@ public class PackageScanTest {
 ## [@Value注解](#Value注解)
 > 分支：value-annotation
 
+#<font color=red>
+#笔记
+beanFactoryPostProcessor会在bean定义加载完后，实例化之前提供修改beanDefination的机制，
+作用是修改beanFactory的beanDefinition属性
+
+beanPostProcessor的逻辑会在bean实例化时调用,作用是修改bean
+</font>
+
 注解@Value和@Autowired通过BeanPostProcessor处理。InstantiationAwareBeanPostProcessor增加postProcessPropertyValues方法，在bean实例化之后设置属性之前执行，查看AbstractAutowireCapableBeanFactory#doCreateBean方法。
 
 增加AutowiredAnnotationBeanPostProcessor用于处理注解@Value，@Autowired的处理在下一节实现，在ClassPathBeanDefinitionScanner#doScan将其添加到容器中。查看AutowiredAnnotationBeanPostProcessor#postProcessPropertyValues，其中字符解析器StringValueResolver在PropertyPlaceholderConfigurer中添加到BeanFactory中。
