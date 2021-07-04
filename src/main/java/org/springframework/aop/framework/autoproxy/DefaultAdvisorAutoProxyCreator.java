@@ -33,20 +33,19 @@ public class DefaultAdvisorAutoProxyCreator implements InstantiationAwareBeanPos
 		if (!earlyProxyReferences.contains(beanName)) {
 			return wrapIfNecessary(bean, beanName);
 		}
-
 		return bean;
 	}
 
 	@Override
 	public Object getEarlyBeanReference(Object bean, String beanName) throws BeansException {
 		earlyProxyReferences.add(beanName);
+		log.info("早期引用缓存添加bean:{}", beanName);
 		return wrapIfNecessary(bean, beanName);
 	}
 
 	protected Object wrapIfNecessary(Object bean, String beanName) {
 		//避免死循环
 		if (isInfrastructureClass(bean.getClass())) {
-			log.info("beanName 为基础设施 advise pointcut advisor");
 			return bean;
 		}
 
@@ -55,15 +54,17 @@ public class DefaultAdvisorAutoProxyCreator implements InstantiationAwareBeanPos
 			for (AspectJExpressionPointcutAdvisor advisor : advisors) {
 				ClassFilter classFilter = advisor.getPointcut().getClassFilter();
 				if (classFilter.matches(bean.getClass())) {
+					log.info("【创建{}的代理类】【{}】开始，值为{}", beanName,beanName, bean.getClass());
 					AdvisedSupport advisedSupport = new AdvisedSupport();
 					TargetSource targetSource = new TargetSource(bean);
 
 					advisedSupport.setTargetSource(targetSource);
 					advisedSupport.setMethodInterceptor((MethodInterceptor) advisor.getAdvice());
 					advisedSupport.setMethodMatcher(advisor.getPointcut().getMethodMatcher());
-					log.info("创建代理类：{}", beanName);
+					Object proxy = new ProxyFactory(advisedSupport).getProxy();
+					log.info("【创建{}的代理类】【{}】结束，值为{}", beanName, beanName,proxy.getClass());
 					//返回代理对象
-					return new ProxyFactory(advisedSupport).getProxy();
+					return proxy;
 				}
 			}
 		} catch (Exception ex) {

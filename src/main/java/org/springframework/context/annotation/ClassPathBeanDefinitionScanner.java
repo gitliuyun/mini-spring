@@ -36,7 +36,7 @@ public class ClassPathBeanDefinitionScanner extends ClassPathScanningCandidateCo
 				}
 				//生成bean的名称
 				String beanName = determineBeanName(candidate);
-				log.info("生成bean==={}的名称", beanName);
+				log.info("生成{}的名称", beanName);
 				//注册BeanDefinition
 				registry.registerBeanDefinition(beanName, candidate);
 			}

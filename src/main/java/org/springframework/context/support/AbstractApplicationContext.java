@@ -35,34 +35,40 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader i
 
 	@Override
 	public void refresh() throws BeansException {
-		log.info("开始刷新容器========");
+		log.info("开始刷新容器");
 		//创建BeanFactory，并加载BeanDefinition
 		refreshBeanFactory();
 		ConfigurableListableBeanFactory beanFactory = getBeanFactory();
 
 		//添加ApplicationContextAwareProcessor，让继承自ApplicationContextAware的bean能感知bean
-		log.info("注册ApplicationContextAwareProcessor====");
+		log.info("【1】开始注册ApplicationContextAwareProcessor<");
 		beanFactory.addBeanPostProcessor(new ApplicationContextAwareProcessor(this));
+		log.info("【1】结束注册ApplicationContextAwareProcessor>");
 
 		//在bean实例化之前，执行BeanFactoryPostProcessor
-		log.info("执行BeanFactoryPostProcessor");
+		log.info("【2】开始执行BeanFactoryPostProcessor<<");
 		invokeBeanFactoryPostProcessors(beanFactory);
+		log.info("【2】结束执行BeanFactoryPostProcessor>>");
 
 		//BeanPostProcessor需要提前与其他bean实例化之前注册
-		log.info("开始注册BeanPostProcessors");
+		log.info("【3】开始注册BeanPostProcessors<<<");
 		registerBeanPostProcessors(beanFactory);
+		log.info("【3】结束注册BeanPostProcessors>>>");
 
 		//初始化事件发布者
-		log.info("初始化事件发布者");
+		log.info("【4】开始初始化事件发布者<<<<");
 		initApplicationEventMulticaster();
+		log.info("【4】结束开始初始化事件发布者>>>>");
 
 		//注册事件监听器
-		log.info("注册事件监听器");
+		log.info("【5】开始注册事件监听器<<<<<");
 		registerListeners();
+		log.info("【5】结束注册事件监听器>>>>>");
 
 		//注册类型转换器和提前实例化单例bean
-		log.info("注册类型转换器和实例化单例bean");
+		log.info("【7】开始注册类型转换器和实例化单例bean<<<<<");
 		finishBeanFactoryInitialization(beanFactory);
+		log.info("【7】结束注册类型转换器和实例化单例bean>>>>>");
 
 		log.info("容器刷新完成");
 		//发布容器刷新完成事件
@@ -99,7 +105,7 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader i
 		log.info("调用BeanFactoryPostProcessors");
 		Map<String, BeanFactoryPostProcessor> beanFactoryPostProcessorMap = beanFactory.getBeansOfType(BeanFactoryPostProcessor.class);
 		for (BeanFactoryPostProcessor beanFactoryPostProcessor : beanFactoryPostProcessorMap.values()) {
-			log.info("调用BeanFactoryPostProcessors的postProcessBeanFactory方法");
+			log.info("调用BeanFactoryPostProcessors的postProcessBeanFactory方法,processor是{}", beanFactoryPostProcessorMap.values());
 			beanFactoryPostProcessor.postProcessBeanFactory(beanFactory);
 		}
 	}

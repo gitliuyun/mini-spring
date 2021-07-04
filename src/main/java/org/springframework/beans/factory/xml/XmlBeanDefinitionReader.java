@@ -83,7 +83,7 @@ public class XmlBeanDefinitionReader extends AbstractBeanDefinitionReader {
 		Element componentScan = root.element(COMPONENT_SCAN_ELEMENT);
 		if (componentScan != null) {
 			String scanPath = componentScan.attributeValue(BASE_PACKAGE_ATTRIBUTE);
-			log.info("需要扫描包目录==== {}", scanPath);
+			log.info("需要扫描包目录{}", scanPath);
 			if (StrUtil.isEmpty(scanPath)) {
 				throw new BeansException("The value of base-package attribute can not be empty or null");
 			}
@@ -142,7 +142,7 @@ public class XmlBeanDefinitionReader extends AbstractBeanDefinitionReader {
 			}
 			//注册BeanDefinition
 			getRegistry().registerBeanDefinition(beanName, beanDefinition);
-			log.info("注册bean==={}的定义", beanName);
+			log.info("注册{}的定义", beanName);
 		}
 	}
 
